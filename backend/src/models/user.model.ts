@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
-interface InterfaceUser extends Document {
+import jwt from "jsonwebtoken";
+
+interface IUser extends Document {
     fullname: string;
     username: string;
     email: string;
@@ -9,11 +10,11 @@ interface InterfaceUser extends Document {
     avatar: string;
     refreshToken: string;
     comparePassword(password: string): Promise<boolean>;
-    generateAccessToken():Promise<string>
-    generateRefreshToken():Promise<string>;
+    generateAccessToken(): string;
+    generateRefreshToken(): string;
 }
 
-interface UserModel extends Model<InterfaceUser> {
+interface IUserModel extends Model<IUser> {
     // Static methods would go here if needed
 }
 
@@ -47,19 +48,40 @@ const userSchema: Schema = new Schema({
     refreshToken: String
 });
 
-userSchema.pre("save", async function(this: InterfaceUser) {
+userSchema.pre("save", async function(this: IUser) {
     if (this.isModified("password")) {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     }
 });
 
-userSchema.methods.comparePassword = async function(this: InterfaceUser, candidatePassword: string): Promise<boolean> {
+userSchema.methods.comparePassword = async function(this: IUser, candidatePassword: string): Promise<boolean> {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.methods.generateAccessToken = async function (){
+userSchema.methods.generateAccessToken = function(this: IUser): string {
+    return jwt.sign(
+        {
+            _id: this._id
+        },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY as string
+        }
+    );
+};
 
-}
+userSchema.methods.generateRefreshToken = function(this: IUser): string {
+    return jwt.sign(
+        {
+            _id: this._id
+        },
+        process.env.REFRESH_TOKEN_SECRET as string,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY as string
+        }
+    );
+};
 
-export const User = mongoose.model<InterfaceUser, UserModel>("User", userSchema);
+export const User = mongoose.model<IUser, IUserModel>("User", userSchema);
+export type { IUser };
