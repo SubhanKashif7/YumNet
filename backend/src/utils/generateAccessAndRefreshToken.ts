@@ -20,7 +20,12 @@ const generateAccessAndRefreshToken = async (userId: string): Promise<Tokens | n
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
 
-        return { accessToken, refreshToken };
+        const obj : Tokens = {
+            refreshToken : refreshToken,
+            accessToken : accessToken
+        };
+
+        return obj
     } catch (error) {
         console.error("Error in generateAccessAndRefreshToken:", error);
         return null;

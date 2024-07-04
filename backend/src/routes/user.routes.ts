@@ -4,7 +4,7 @@ import multerMiddleware from "../middlewares/multer.middleware";
 import login from "../controllers/users/login";
 import verifyJWT from "../middlewares/auth.middleware";
 import { Request , Response } from "express";
-import { AuthenticatedRequest } from "../types/AuthenticatedReques";
+import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 const userRouter: Router = Router();
 
 
