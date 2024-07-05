@@ -11,6 +11,7 @@ interface IRecipe extends Document {
     recipeVideo?: string;
     recipeLikes: number;
     view: number;
+    owner : mongoose.Schema.Types.ObjectId;
 }
 
 interface IRecipeModel extends Model<IRecipe> {}
@@ -20,6 +21,9 @@ const recipeSchema: Schema = new Schema({
         type: String,
         required: [true, "Recipe name is required"],
         trim: true,
+        unique : true,
+        lowercase : true
+
     },
     recipeTitle: {
         type: String,
@@ -48,6 +52,13 @@ const recipeSchema: Schema = new Schema({
         type: Number,
         default: 0,
     },
+
+    owner : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "User"
+    }
+
+    
 }, {
     timestamps: true,
 });
