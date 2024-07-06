@@ -8,7 +8,9 @@ const app : Express = express();
 
 app.use(cors());
 app.use(cookieParser());
-app.use(express.json({limit : "15kb"}));
+
+app.use(express.json({limit : "50mb"}))
+app.use(express.urlencoded({limit : "50mb",extended : true}))
 app.use("/api/v1/users/",userRouter);
 app.use("/auth/firebase",frouter);
 app.use("/api/v1/authenticated/recipe",recipeRouter);
